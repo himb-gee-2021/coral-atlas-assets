@@ -1,0 +1,1 @@
+# coral-atlas-assets
