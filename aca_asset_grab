@@ -1,0 +1,67 @@
+/*
+Little script for the GEE JS API to access some public assets from 
+the Allen Coral Atlas [https://allencoralatlas.org/] directly off GEE
+
+The same thing could be re-written for the Python API, you'd just need
+either directly load the assets or replicate the modules/library ad hoc.
+The module live here:
+https://github.com/CoralMapping/gee-mapping-source/tree/master/global_reefs_modules
+*/
+
+// Load and libraries needed
+var map_palettes = require('users/mitchest/global_reefs_modules:colour_pals');
+var param_module = require('users/mitchest/global_reefs_modules:reef_params');
+
+// grab the bathymetry assets
+var bathy_col = ee.ImageCollection(
+  [
+    param_module.hawaii.segments,
+    param_module.png_solomons.segments,
+    param_module.indonesia.segments,
+    param_module.gbr_torres.segments,
+    param_module.mesoamerica.segments
+  ]
+  )
+  .select('depth')
+  .mean()
+  .uint16();
+
+Map.addLayer(bathy_col, {min:0, max: 1500}, "Bathymetry collection", false);
+
+
+// function to make classification images consistent
+var rename_ic = function(x) {
+  return(x.toByte().rename('classification'));
+};
+
+// grab the geomorphic maps
+var geomorphic_col = ee.ImageCollection(
+  [
+    param_module.hawaii.geo_map_clean3,
+    param_module.png_solomons.geo_map_clean3,
+    param_module.indonesia.geo_map_clean3,
+    param_module.gbr_torres.geo_map_clean3,
+    param_module.mesoamerica.geo_map_clean3
+  ]
+  )
+  .map(rename_ic)
+  .mode()
+  .byte();
+
+Map.addLayer(geomorphic_col, map_palettes.geo, 'Geomorphic maps', false);
+
+// grab the benthic maps
+var benthic_col = ee.ImageCollection(
+  [
+    param_module.hawaii.benthic_map_clean1
+    param_module.png_solomons.benthic_map_clean2,
+    param_module.indonesia.benthic_map_clean2,
+    param_module.gbr_torres.benthic_map_clean2,
+    param_module.mesoamerica.benthic_map_clean2
+  ]
+  )
+  .map(rename_ic)
+  .mode()
+  .byte();
+
+Map.addLayer(benthic_col, map_palettes.benthic, 'Benthic maps', false);
