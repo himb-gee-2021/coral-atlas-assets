@@ -53,7 +53,7 @@ Map.addLayer(geomorphic_col, map_palettes.geo, 'Geomorphic maps', false);
 // grab the benthic maps
 var benthic_col = ee.ImageCollection(
   [
-    param_module.hawaii.benthic_map_clean1
+    param_module.hawaii.benthic_map_clean1,
     param_module.png_solomons.benthic_map_clean2,
     param_module.indonesia.benthic_map_clean2,
     param_module.gbr_torres.benthic_map_clean2,
